@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#ECF6F9"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>BLAZE 🔥</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Cairo', 'sans-serif'] },
+      colors: {
+        appBg: '#ECF6F9',
+        cardCyan: '#B2EBF2',
+        cardYellow: '#FFF09E',
+        cardLavender: '#BDB2FF',
+        cardPink: '#FFADAD',
+        navBg: '#A6E1E9',
+        darkText: '#1A2E35',
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+  body { background-color: #ECF6F9; font-family: 'Cairo', sans-serif; color: #1A2E35; overscroll-behavior: none; }
+  .page { display: none; min-height: 100vh; flex-direction: column; padding-bottom: 75px; }
+  .page.active { display: flex; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .soft-shadow { box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+  .card-shadow { box-shadow: 0 6px 20px rgba(0,0,0,0.10); }
+  .matrix-card { cursor:pointer; transition:transform 0.15s ease, box-shadow 0.15s ease; user-select:none; }
+  .matrix-card:active { transform:scale(0.95); }
+  @keyframes pulse-ring { 0%{transform:scale(1);opacity:0.7} 100%{transform:scale(1.6);opacity:0} }
+  .pulse-ring { animation: pulse-ring 1s ease-out infinite; }
+  .notif-banner { animation: slideDown 0.4s ease; }
+  @keyframes slideDown { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
+  .task-item { transition:transform 0.1s ease; }
+  .task-item:active { transform:scale(0.98); }
+  @keyframes pop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25)} }
+  input[type="range"] { -webkit-appearance:none; appearance:none; height:6px; border-radius:3px; background:#ddd; outline:none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:#1A2E35; cursor:pointer; }
+  ::-webkit-scrollbar { display:none; }
+  .badge { min-width:18px; height:18px; font-size:10px; display:inline-flex; align-items:center; justify-content:center; border-radius:9px; padding:0 4px; }
+  .geo-active { animation: geoGlow 2s ease-in-out infinite; }
+  @keyframes geoGlow { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)} 50%{box-shadow:0 0 0 8px rgba(34,197,94,0)} }
+  .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards; max-width:88%; pointer-events:none; }
+  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(-16px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  @keyframes toastOut { to{opacity:0} }
+  #side-menu { transition: transform 0.3s ease; }
+  .modal-overlay { animation: fadeIn 0.2s ease; }
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .sheet-up { animation: slideUp 0.3s ease; }
+
+  /* AUTH PAGE */
+  #page-auth { display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:24px; background:#ECF6F9; }
+  #page-auth.active { display:flex; animation: fadeIn 0.35s ease; }
+  .auth-input { width:100%; background:#fff; border:2px solid transparent; border-radius:14px; padding:14px 18px; font-family:'Cairo',sans-serif; font-weight:700; font-size:14px; outline:none; transition:border-color 0.2s; color:#1A2E35; }
+  .auth-input:focus { border-color:#B2EBF2; }
+  .auth-btn { width:100%; background:#1A2E35; color:#fff; font-family:'Cairo',sans-serif; font-weight:900; font-size:16px; padding:16px; border-radius:16px; border:none; cursor:pointer; transition:transform 0.1s, opacity 0.2s; }
+  .auth-btn:active { transform:scale(0.97); }
+  .auth-btn:disabled { opacity:0.5; cursor:not-allowed; }
+  .auth-tab { flex:1; padding:10px; font-family:'Cairo',sans-serif; font-weight:900; font-size:13px; border:none; cursor:pointer; border-radius:12px; transition:all 0.2s; background:transparent; color:#888; }
+  .auth-tab.active { background:#1A2E35; color:#fff; }
+  @keyframes flamePulse { 0%,100%{transform:scale(1) rotate(-2deg)} 50%{transform:scale(1.08) rotate(2deg)} }
+  .flame-animate { animation: flamePulse 2.5s ease-in-out infinite; display:inline-block; }
+</style>
+</head>
+<body class="max-w-md mx-auto overflow-x-hidden select-none">
+
+<!-- ═══════════════════════════════════════════
+     PAGE 0 — AUTH (Login / Register)
+═══════════════════════════════════════════ -->
+<div id="page-auth" class="active">
+  <div class="w-full max-w-sm">
+
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <div class="flame-animate text-7xl mb-3">🔥</div>
+      <h1 class="font-black text-4xl text-[#1A2E35] tracking-tight">BLAZE</h1>
+      <p class="text-sm font-bold text-gray-400 mt-1 tracking-widest">مصفوفة أيزنهاور</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-1 bg-white rounded-2xl p-1.5 soft-shadow mb-5">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">حساب جديد</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="auth-login-form">
+      <div class="bg-white rounded-3xl p-5 soft-shadow mb-4 flex flex-col gap-3">
+        <div>
+          <label class="block text-xs font-black text-gray-400 mb-1.5">📧 البريد الإلكتروني</label>
+          <input id="login-email" type="email" placeholder="example@email.com" class="auth-input" dir="ltr"/>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-gray-400 mb-1.5">🔒 كلمة المرور</label>
+          <input id="login-password" type="password" placeholder="••••••••" class="auth-input" dir="ltr"/>
+        </div>
+      </div>
+      <button class="auth-btn mb-3" onclick="loginUser()" id="btn-login">🔥 دخول</button>
+      <button class="w-full text-center text-xs font-bold text-gray-400 py-2" onclick="forgotPassword()">نسيت كلمة المرور؟</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="auth-register-form" class="hidden">
+      <div class="bg-white rounded-3xl p-5 soft-shadow mb-4 flex flex-col gap-3">
+        <div>
+          <label class="block text-xs font-black text-gray-400 mb-1.5">👤 الاسم الكامل</label>
+          <input id="reg-name" type="text" placeholder="اسمك هنا" class="auth-input"/>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-gray-400 mb-1.5">📧 البريد الإلكتروني</label>
+          <input id="reg-email" type="email" placeholder="example@email.com" class="auth-input" dir="ltr"/>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-gray-400 mb-1.5">🔒 كلمة المرور</label>
+          <input id="reg-password" type="password" placeholder="6 أحرف على الأقل" class="auth-input" dir="ltr"/>
+        </div>
+      </div>
+      <button class="auth-btn mb-3" onclick="registerUser()" id="btn-register">✨ إنشاء الحساب</button>
+    </div>
+
+    <!-- Auth Error -->
+    <div id="auth-error" class="hidden bg-red-50 text-red-500 font-bold text-sm text-center rounded-2xl px-4 py-3 mt-2"></div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 1 — DASHBOARD
+═══════════════════════════════════════════ -->
+<div id="page-dashboard" class="page active">
+
+  <!-- Notification Banner -->
+  <div id="notif-banner" class="notif-banner bg-[#1A2E35] text-white text-sm font-bold py-3 px-4 flex items-center justify-between gap-2">
+    <span id="notif-text" class="flex-1">🔔 أهلاً بك في BLAZE — ابدأ يومك بقوة! 🔥</span>
+    <button onclick="closeBanner()" class="text-white/60 hover:text-white text-base leading-none flex-shrink-0">✕</button>
+  </div>
+
+  <!-- Header -->
+  <header class="px-4 pt-4 pb-2">
+    <div class="flex items-center justify-between">
+      <button onclick="toggleMenu()" class="flex flex-col gap-1.5 w-8 py-1 cursor-pointer">
+        <span class="block w-full h-[3px] bg-[#1A2E35] rounded"></span>
+        <span class="block w-2/3 h-[3px] bg-[#1A2E35] rounded"></span>
+        <span class="block w-full h-[3px] bg-[#1A2E35] rounded"></span>
+      </button>
+      <div id="user-chip" onclick="goTo('page-profile')" class="flex items-center bg-[#C6EDF2] rounded-full pl-2 pr-4 py-1.5 gap-3 cursor-pointer">
+        <span class="font-bold text-sm" id="greeting-name">مرحباً 👋</span>
+        <div class="w-9 h-9 rounded-full bg-[#1A2E35] flex items-center justify-center text-white font-black text-base" id="avatar-initials">B</div>
+      </div>
+    </div>
+    <p class="text-xs text-gray-400 font-bold mt-1 text-center" id="today-date"></p>
+  </header>
+
+  <!-- Scrollable content -->
+  <main class="flex-1 px-4 overflow-y-auto">
+
+    <!-- Stats row -->
+    <div class="flex gap-2 mb-4">
+      <div class="flex-1 bg-white rounded-2xl p-3 soft-shadow text-center">
+        <p class="text-xl font-black" id="stat-total">0</p>
+        <p class="text-[10px] text-gray-400 font-bold mt-0.5">الإجمالي</p>
+      </div>
+      <div class="flex-1 bg-white rounded-2xl p-3 soft-shadow text-center">
+        <p class="text-xl font-black text-green-500" id="stat-done">0</p>
+        <p class="text-[10px] text-gray-400 font-bold mt-0.5">مكتملة ✓</p>
+      </div>
+      <div class="flex-1 bg-white rounded-2xl p-3 soft-shadow text-center">
+        <p class="text-xl font-black text-orange-400" id="stat-today">0</p>
+        <p class="text-[10px] text-gray-400 font-bold mt-0.5">اليوم 📅</p>
+      </div>
+    </div>
+
+    <!-- Voice Brain Dump -->
+    <div class="bg-[#1A2E35] rounded-3xl p-4 mb-4 soft-shadow">
+      <div class="flex items-center gap-3">
+        <div class="relative flex-shrink-0">
+          <div id="pulse-ring" class="absolute inset-0 rounded-full bg-[#B2EBF2] opacity-0 pointer-events-none"></div>
+          <button id="voice-btn" onclick="toggleVoice()" class="relative w-12 h-12 bg-[#B2EBF2] rounded-full flex items-center justify-center z-10 transition-colors">
+            <svg id="mic-icon" class="w-6 h-6 text-[#1A2E35]" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="flex-1">
+          <p class="text-white font-bold text-sm leading-tight">أفرغ ما في ذهنك الآن</p>
+          <p class="text-[#B2EBF2] text-xs leading-tight">واترك الذكاء الاصطناعي يرتب أفكارك</p>
+        </div>
+        <div id="voice-listening-badge" class="hidden bg-[#FFADAD] text-[#1A2E35] text-[10px] font-black px-2 py-1 rounded-full">
+          🔴 يستمع
+        </div>
+      </div>
+      <div id="voice-transcript" class="text-[#B2EBF2] text-sm bg-white/10 rounded-xl p-3 mt-3 hidden leading-relaxed"></div>
+    </div>
+
+    <!-- Eisenhower Matrix -->
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-black text-base text-[#1A2E35]">مصفوفة أيزنهاور</h2>
+      <span class="text-xs text-gray-400 font-bold">اضغط للإضافة</span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-5">
+      <div class="matrix-card bg-cardCyan rounded-3xl flex flex-col items-center justify-center text-center h-36 soft-shadow p-3 relative" onclick="openTaskEntry('q1')">
+        <span class="text-sm font-black leading-tight">المهم</span>
+        <span class="text-sm font-black mb-1 leading-tight">العاجل</span>
+        <span class="text-2xl font-black" id="pct-q1">0%</span>
+        <span id="badge-q1" class="badge bg-[#1A2E35] text-white absolute top-2 left-2 hidden">0</span>
+        <span class="absolute bottom-2 right-2 text-xs">🔥</span>
+      </div>
+      <div class="matrix-card bg-cardYellow rounded-3xl flex flex-col items-center justify-center text-center h-36 soft-shadow p-3 relative" onclick="openTaskEntry('q2')">
+        <span class="text-sm font-black leading-tight">المهم</span>
+        <span class="text-sm font-black mb-1 leading-tight">الغير عاجل</span>
+        <span class="text-2xl font-black" id="pct-q2">0%</span>
+        <span id="badge-q2" class="badge bg-[#1A2E35] text-white absolute top-2 left-2 hidden">0</span>
+        <span class="absolute bottom-2 right-2 text-xs">🎯</span>
+      </div>
+      <div class="matrix-card bg-cardLavender rounded-3xl flex flex-col items-center justify-center text-center h-36 soft-shadow p-3 relative" onclick="openTaskEntry('q3')">
+        <span class="text-sm font-black leading-tight">العاجل</span>
+        <span class="text-sm font-black mb-1 leading-tight">غير المهم</span>
+        <span class="text-2xl font-black" id="pct-q3">0%</span>
+        <span id="badge-q3" class="badge bg-[#1A2E35] text-white absolute top-2 left-2 hidden">0</span>
+        <span class="absolute bottom-2 right-2 text-xs">⚡</span>
+      </div>
+      <div class="matrix-card bg-cardPink rounded-3xl flex flex-col items-center justify-center text-center h-36 soft-shadow p-3 relative" onclick="openTaskEntry('q4')">
+        <span class="text-sm font-black leading-tight">غير مهم</span>
+        <span class="text-sm font-black mb-1 leading-tight">وغير عاجل</span>
+        <span class="text-2xl font-black" id="pct-q4">0%</span>
+        <span id="badge-q4" class="badge bg-[#1A2E35] text-white absolute top-2 left-2 hidden">0</span>
+        <span class="absolute bottom-2 right-2 text-xs">🗑️</span>
+      </div>
+    </div>
+
+    <!-- Today Tasks -->
+    <div class="bg-white rounded-3xl p-4 soft-shadow mb-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-black text-sm">مهام اليوم ⏰</h3>
+        <button onclick="goTo('page-tasks')" class="text-xs font-bold text-gray-400">عرض الكل ←</button>
+      </div>
+      <div id="today-tasks-list">
+        <p class="text-gray-400 text-xs text-center py-3 font-bold">لا توجد مهام لليوم بعد 📋</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 2 — TASK ENTRY
+═══════════════════════════════════════════ -->
+<div id="page-task-entry" class="page">
+  <div id="task-entry-header" class="px-4 pt-6 pb-5 flex items-center gap-3 bg-cardCyan rounded-b-3xl">
+    <button onclick="goBack()" class="w-10 h-10 bg-white/60 rounded-full flex items-center justify-center flex-shrink-0">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <div>
+      <h2 class="font-black text-lg leading-tight" id="entry-quad-title">مهمة جديدة</h2>
+      <p class="text-xs font-bold opacity-70" id="entry-quad-sub">أضف مهمة</p>
+    </div>
+  </div>
+
+  <main class="flex-1 px-4 pt-4 overflow-y-auto">
+
+    <div class="bg-white rounded-2xl p-4 soft-shadow mb-3">
+      <label class="block text-xs font-black mb-2 text-gray-500">اسم المهمة *</label>
+      <input id="task-name" type="text" placeholder="ماذا تريد أن تفعل؟" class="w-full bg-appBg rounded-xl px-4 py-3 font-bold outline-none text-sm border-2 border-transparent focus:border-[#B2EBF2] transition-colors"/>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 soft-shadow mb-3">
+      <label class="block text-xs font-black mb-3 text-gray-500">🕐 الوقت</label>
+      <div class="flex gap-3 items-end">
+        <div class="flex-1">
+          <p class="text-[10px] text-gray-400 font-black mb-1">من</p>
+          <input id="task-time-from" type="time" class="w-full bg-appBg rounded-xl px-3 py-2.5 font-bold outline-none text-sm border-2 border-transparent focus:border-[#B2EBF2]"/>
+        </div>
+        <span class="text-gray-300 font-black pb-2">—</span>
+        <div class="flex-1">
+          <p class="text-[10px] text-gray-400 font-black mb-1">إلى</p>
+          <input id="task-time-to" type="time" class="w-full bg-appBg rounded-xl px-3 py-2.5 font-bold outline-none text-sm border-2 border-transparent focus:border-[#B2EBF2]"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 soft-shadow mb-3">
+      <label class="block text-xs font-black mb-2 text-gray-500">📅 التاريخ</label>
+      <input id="task-date" type="date" class="w-full bg-appBg rounded-xl px-4 py-3 font-bold outline-none text-sm border-2 border-transparent focus:border-[#B2EBF2]"/>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 soft-shadow mb-3">
+      <label class="block text-xs font-black mb-2 text-gray-500">📍 الموقع الجغرافي <span class="text-gray-300">(اختياري)</span></label>
+      <div class="flex gap-2">
+        <input id="task-location" type="text" placeholder="اسم المكان" class="flex-1 bg-appBg rounded-xl px-4 py-3 font-bold outline-none text-sm border-2 border-transparent focus:border-[#B2EBF2]"/>
+        <button onclick="captureLocation()" id="loc-btn" class="w-12 h-12 bg-cardCyan rounded-xl flex items-center justify-center flex-shrink-0 transition-colors">
+          <svg class="w-5 h-5 text-[#1A2E35]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        </button>
+      </div>
+      <div id="location-status" class="text-xs text-green-600 font-bold mt-2 hidden"></div>
+      <div id="geo-radius-wrap" class="mt-3 hidden">
+        <p class="text-xs text-gray-400 font-bold mb-1">نطاق تنبيه Geofence: <span id="geo-radius-val" class="text-[#1A2E35]">200</span> متر</p>
+        <input type="range" id="geo-radius" min="50" max="1000" value="200" step="50" class="w-full" oninput="document.getElementById('geo-radius-val').textContent=this.value"/>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 soft-shadow mb-4">
+      <label class="block text-xs font-black mb-2 text-gray-500">📝 ملاحظات</label>
+      <textarea id="task-note" rows="3" placeholder="أي تفاصيل إضافية..." class="w-full bg-appBg rounded-xl px-4 py-3 font-bold outline-none text-sm border-2 border-transparent focus:border-[#B2EBF2] resize-none"></textarea>
+    </div>
+
+    <button onclick="saveTask()" class="w-full bg-[#1A2E35] text-white font-black text-base py-4 rounded-2xl mb-4 soft-shadow active:scale-95 transition-transform">
+      💾 حفظ المهمة
+    </button>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 3 — TASKS LIST
+═══════════════════════════════════════════ -->
+<div id="page-tasks" class="page">
+  <header class="px-4 pt-6 pb-3 flex items-center gap-3">
+    <button onclick="goBack()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center soft-shadow flex-shrink-0">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <h2 class="font-black text-xl">كل المهام</h2>
+  </header>
+
+  <div class="px-4 mb-3">
+    <div class="flex gap-1 bg-white rounded-2xl p-1.5 soft-shadow overflow-x-auto">
+      <button onclick="setTaskTab('all')" id="tab-all" class="flex-shrink-0 px-3 py-2 rounded-xl font-black text-xs bg-[#1A2E35] text-white">الكل</button>
+      <button onclick="setTaskTab('q1')" id="tab-q1" class="flex-shrink-0 px-3 py-2 rounded-xl font-black text-xs text-gray-400">مهم عاجل</button>
+      <button onclick="setTaskTab('q2')" id="tab-q2" class="flex-shrink-0 px-3 py-2 rounded-xl font-black text-xs text-gray-400">مهم</button>
+      <button onclick="setTaskTab('q3')" id="tab-q3" class="flex-shrink-0 px-3 py-2 rounded-xl font-black text-xs text-gray-400">عاجل</button>
+      <button onclick="setTaskTab('q4')" id="tab-q4" class="flex-shrink-0 px-3 py-2 rounded-xl font-black text-xs text-gray-400">أخرى</button>
+    </div>
+  </div>
+
+  <main class="flex-1 px-4 overflow-y-auto">
+    <div id="tasks-list-container"></div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 4 — TASK DETAIL
+═══════════════════════════════════════════ -->
+<div id="page-task-detail" class="page">
+  <div id="detail-header" class="px-4 pt-6 pb-5 rounded-b-3xl bg-cardCyan">
+    <div class="flex items-center gap-3 mb-3">
+      <button onclick="goBack()" class="w-10 h-10 bg-white/50 rounded-full flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-[#1A2E35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+      </button>
+      <h2 class="font-black text-base" id="detail-quad-title">تفاصيل المهمة</h2>
+    </div>
+    <p class="font-black text-lg leading-tight mb-2" id="detail-task-name"></p>
+    <div class="flex flex-wrap gap-2 text-xs font-bold text-[#1A2E35]/70">
+      <span id="detail-time"></span>
+      <span id="detail-date"></span>
+      <span id="detail-loc-chip" class="hidden">📍 <span id="detail-loc-name"></span></span>
+    </div>
+  </div>
+
+  <main class="flex-1 px-4 pt-4 overflow-y-auto">
+
+    <!-- Timer -->
+    <div class="bg-white rounded-3xl p-5 soft-shadow mb-3 text-center">
+      <p class="text-xs font-black text-gray-400 mb-1">الوقت المنقضي</p>
+      <p class="text-5xl font-black tabular-nums" id="task-timer">00:00:00</p>
+      <div class="flex gap-2 mt-4">
+        <button id="btn-start-task" onclick="startTaskRun()" class="flex-1 bg-[#1A2E35] text-white font-black py-3 rounded-xl text-sm">▶ بدء المهمة</button>
+        <button id="btn-stop-task" onclick="stopTaskRun()" class="flex-1 bg-orange-100 text-orange-600 font-black py-3 rounded-xl text-sm hidden">⏸ إيقاف</button>
+        <button id="btn-done-task" onclick="completeTask()" class="flex-1 bg-green-100 text-green-700 font-black py-3 rounded-xl text-sm hidden">✓ اكتملت</button>
+      </div>
+    </div>
+
+    <!-- Geofence Status -->
+    <div id="geo-status-card" class="bg-white rounded-2xl p-4 soft-shadow mb-3 hidden">
+      <div class="flex items-center gap-3">
+        <div id="geo-dot" class="w-4 h-4 bg-green-500 rounded-full geo-active flex-shrink-0"></div>
+        <div>
+          <p class="font-black text-sm">🗺️ مراقبة Geofence نشطة</p>
+          <p class="text-xs text-gray-500 font-bold" id="geo-distance-text">جارٍ تحديد الموقع...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note -->
+    <div id="detail-note-wrap" class="bg-white rounded-2xl p-4 soft-shadow mb-3 hidden">
+      <p class="text-xs font-black text-gray-400 mb-1">📝 ملاحظات</p>
+      <p class="text-sm font-bold leading-relaxed" id="detail-note-text"></p>
+    </div>
+
+    <!-- Done Status -->
+    <div id="done-status-banner" class="bg-green-50 rounded-2xl p-4 mb-3 hidden text-center">
+      <p class="text-green-600 font-black text-lg">🎉 مكتملة!</p>
+    </div>
+
+    <button onclick="deleteCurrentTask()" class="w-full bg-red-50 text-red-500 font-bold py-3 rounded-2xl text-sm mb-3">
+      🗑️ حذف المهمة
+    </button>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 5 — PROFILE
+═══════════════════════════════════════════ -->
+<div id="page-profile" class="page">
+  <header class="px-4 pt-6 pb-3 flex items-center gap-3">
+    <button onclick="goBack()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center soft-shadow flex-shrink-0">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <h2 class="font-black text-xl">الملف الشخصي</h2>
+  </header>
+  <main class="flex-1 px-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl p-5 soft-shadow mb-4 text-center">
+      <div class="w-20 h-20 rounded-full bg-[#1A2E35] flex items-center justify-center text-white font-black text-3xl mx-auto mb-3" id="profile-avatar">B</div>
+      <input id="profile-name" type="text" placeholder="أدخل اسمك" class="text-center bg-appBg rounded-xl px-4 py-2 font-black text-lg outline-none w-full mb-1 border-2 border-transparent focus:border-[#B2EBF2] transition-colors" oninput="updateName(this.value)" autocomplete="name"/>
+      <p class="text-xs text-gray-400 font-bold mb-1">اضغط لتعديل اسمك</p>
+      <p class="text-xs text-[#1A2E35]/40 font-bold" id="profile-email"></p>
+    </div>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="bg-cardCyan rounded-2xl p-4 text-center soft-shadow"><p class="text-3xl font-black" id="prof-total">0</p><p class="text-xs font-bold text-gray-600 mt-1">إجمالي المهام</p></div>
+      <div class="bg-cardYellow rounded-2xl p-4 text-center soft-shadow"><p class="text-3xl font-black" id="prof-done">0</p><p class="text-xs font-bold text-gray-600 mt-1">مهام مكتملة ✓</p></div>
+      <div class="bg-cardLavender rounded-2xl p-4 text-center soft-shadow"><p class="text-3xl font-black" id="prof-streak">0</p><p class="text-xs font-bold text-gray-600 mt-1">أيام متتالية 🔥</p></div>
+      <div class="bg-cardPink rounded-2xl p-4 text-center soft-shadow"><p class="text-3xl font-black" id="prof-pct">0%</p><p class="text-xs font-bold text-gray-600 mt-1">نسبة الإنجاز</p></div>
+    </div>
+
+    <!-- Firebase Config Banner -->
+    <div class="bg-[#1A2E35] rounded-2xl p-4 mb-4 text-white">
+      <p class="font-black text-sm mb-1">🔥 ربط Firebase</p>
+      <p class="text-xs text-[#B2EBF2] font-bold leading-relaxed">البيانات محفوظة محلياً الآن. لتفعيل المزامنة، أضف إعدادات Firebase في ملف الكود (قسم Firebase Config).</p>
+    </div>
+
+    <button onclick="exportTasks()" class="w-full bg-white rounded-2xl py-3 font-bold text-sm soft-shadow mb-3">📤 تصدير المهام (JSON)</button>
+    <button onclick="clearAllData()" class="w-full bg-red-50 text-red-500 font-bold py-3 rounded-2xl text-sm mb-3">🗑️ مسح كل البيانات</button>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     BOTTOM NAVIGATION
+═══════════════════════════════════════════ -->
+<nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-navBg py-2 flex justify-around items-center max-w-md mx-auto shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-50">
+  <button onclick="navTo('page-dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-0.5">
+    <div class="nav-icon-wrap w-10 h-10 rounded-full bg-[#1A2E35] flex items-center justify-center text-white">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    </div>
+    <span class="text-[10px] font-black text-[#1A2E35]">الرئيسية</span>
+  </button>
+
+  <button onclick="openTaskEntry(null)" class="flex flex-col items-center -mt-6">
+    <div class="w-14 h-14 bg-[#1A2E35] rounded-full flex items-center justify-center text-white text-2xl font-black card-shadow border-4 border-navBg">+</div>
+  </button>
+
+  <button onclick="navTo('page-tasks')" id="nav-tasks" class="flex flex-col items-center gap-0.5">
+    <div class="nav-icon-wrap w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1A2E35]">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+    </div>
+    <span class="text-[10px] font-black text-[#1A2E35]">المهام</span>
+  </button>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     SIDE MENU
+═══════════════════════════════════════════ -->
+<div id="side-menu-overlay" class="fixed inset-0 bg-black/40 z-50 hidden" onclick="toggleMenu()"></div>
+<div id="side-menu" class="fixed top-0 right-0 h-full w-72 bg-white z-50 transform translate-x-full flex flex-col shadow-2xl">
+  <div class="bg-[#1A2E35] p-5 pt-10">
+    <div class="w-14 h-14 rounded-full bg-cardCyan flex items-center justify-center text-[#1A2E35] font-black text-2xl mb-2" id="menu-avatar">B</div>
+    <p class="text-white font-black" id="menu-name">مرحباً!</p>
+    <p class="text-[#B2EBF2] text-xs font-bold">BLAZE — مصفوفة أيزنهاور 🔥</p>
+  </div>
+  <nav class="flex-1 p-4 overflow-y-auto">
+    <button onclick="navTo('page-dashboard');toggleMenu()" class="w-full text-right px-4 py-3 rounded-xl hover:bg-appBg font-bold text-sm mb-1 flex items-center gap-2">🏠 الصفحة الرئيسية</button>
+    <button onclick="navTo('page-tasks');toggleMenu()" class="w-full text-right px-4 py-3 rounded-xl hover:bg-appBg font-bold text-sm mb-1 flex items-center gap-2">✅ كل المهام</button>
+    <button onclick="navTo('page-profile');toggleMenu()" class="w-full text-right px-4 py-3 rounded-xl hover:bg-appBg font-bold text-sm mb-1 flex items-center gap-2">👤 الملف الشخصي</button>
+    <hr class="my-3 border-gray-100"/>
+    <button onclick="requestNotifPermission();toggleMenu()" class="w-full text-right px-4 py-3 rounded-xl hover:bg-appBg font-bold text-sm mb-1 flex items-center gap-2">🔔 تفعيل الإشعارات</button>
+    <button onclick="exportTasks();toggleMenu()" class="w-full text-right px-4 py-3 rounded-xl hover:bg-appBg font-bold text-sm mb-1 flex items-center gap-2">📤 تصدير المهام</button>
+    <hr class="my-3 border-gray-100"/>
+    <button onclick="logoutUser()" class="w-full text-right px-4 py-3 rounded-xl hover:bg-red-50 text-red-500 font-bold text-sm mb-1 flex items-center gap-2">🚪 تسجيل الخروج</button>
+  </nav>
+  <p class="text-center text-xs text-gray-300 font-bold p-4">BLAZE v1.0 © 2025</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     QUADRANT CHOOSER MODAL
+═══════════════════════════════════════════ -->
+<div id="quad-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-end justify-center">
+  <div class="bg-white w-full max-w-md rounded-t-3xl p-5 pb-8 sheet-up">
+    <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4"></div>
+    <h3 class="font-black text-base mb-4 text-center">اختر المربع المناسب</h3>
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="closeQuadModal();openTaskEntry('q1')" class="bg-cardCyan rounded-2xl py-4 font-black text-sm active:scale-95 transition-transform">🔥 المهم العاجل</button>
+      <button onclick="closeQuadModal();openTaskEntry('q2')" class="bg-cardYellow rounded-2xl py-4 font-black text-sm active:scale-95 transition-transform">🎯 المهم الغير عاجل</button>
+      <button onclick="closeQuadModal();openTaskEntry('q3')" class="bg-cardLavender rounded-2xl py-4 font-black text-sm active:scale-95 transition-transform">⚡ العاجل غير المهم</button>
+      <button onclick="closeQuadModal();openTaskEntry('q4')" class="bg-cardPink rounded-2xl py-4 font-black text-sm active:scale-95 transition-transform">🗑️ غير مهم وغير عاجل</button>
+    </div>
+    <button onclick="closeQuadModal()" class="w-full mt-3 text-gray-400 font-bold text-sm py-2">إلغاء</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════ -->
+<script type="module">
+
+// ══════════════════════════════════════════
+// FIREBASE — Auth + Firestore
+// ══════════════════════════════════════════
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { getAnalytics }     from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut, onAuthStateChanged, sendPasswordResetEmail, updateProfile
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, getDocs,
+  doc, updateDoc, deleteDoc, query, orderBy
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyD0zpWrIHa7Tj1c00TKOV4PCFsa2Zi1VQo",
+  authDomain:        "blaze-ac02a.firebaseapp.com",
+  projectId:         "blaze-ac02a",
+  storageBucket:     "blaze-ac02a.firebasestorage.app",
+  messagingSenderId: "457797679823",
+  appId:             "1:457797679823:web:41b72f4a6acadeef5495ba",
+  measurementId:     "G-SGFYG2NXLR"
+};
+
+const fbApp     = initializeApp(firebaseConfig);
+const analytics = getAnalytics(fbApp);
+const auth      = getAuth(fbApp);
+const db        = getFirestore(fbApp);
+
+let currentUser = null;
+let TASKS_COL   = null;
+
+// ══════════════════════════════════════════
+// AUTH STATE LISTENER
+// ══════════════════════════════════════════
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    TASKS_COL   = collection(db, 'users', user.uid, 'tasks');
+    document.getElementById('page-auth').classList.remove('active');
+    document.getElementById('bottom-nav').style.display = 'flex';
+    const displayName = user.displayName || localStorage.getItem('blaze_name') || '';
+    if (displayName) { localStorage.setItem('blaze_name', displayName); applyName(displayName); }
+    if (document.getElementById('profile-name'))  document.getElementById('profile-name').value   = displayName;
+    if (document.getElementById('profile-email')) document.getElementById('profile-email').textContent = user.email;
+    setTodayDate();
+    setDefaultDate();
+    initProfile();
+    await loadData();
+    requestNotifPermission();
+    checkUpcomingTasks();
+    setInterval(checkUpcomingTasks, 60000);
+    navTo('page-dashboard');
+  } else {
+    currentUser = null; TASKS_COL = null; tasks = [];
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-auth').classList.add('active');
+    document.getElementById('bottom-nav').style.display = 'none';
+  }
+});
+
+// ══════════════════════════════════════════
+// AUTH FUNCTIONS
+// ══════════════════════════════════════════
+window.switchAuthTab = function(tab) {
+  document.getElementById('auth-login-form').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('auth-register-form').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('auth-error').classList.add('hidden');
+};
+
+window.loginUser = async function() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  if (!email || !pass) { showAuthError('أدخل البريد وكلمة المرور'); return; }
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = '⏳ جارٍ الدخول...';
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(e) { showAuthError(authErrMsg(e.code)); btn.disabled = false; btn.textContent = '🔥 دخول'; }
+};
+
+window.registerUser = async function() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-password').value;
+  if (!name || !email || !pass) { showAuthError('أكمل جميع الحقول'); return; }
+  if (pass.length < 6) { showAuthError('كلمة المرور 6 أحرف على الأقل'); return; }
+  const btn = document.getElementById('btn-register');
+  btn.disabled = true; btn.textContent = '⏳ جارٍ الإنشاء...';
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: name });
+    localStorage.setItem('blaze_name', name);
+  } catch(e) { showAuthError(authErrMsg(e.code)); btn.disabled = false; btn.textContent = '✨ إنشاء الحساب'; }
+};
+
+window.logoutUser = async function() {
+  if (!confirm('هل تريد تسجيل الخروج؟')) return;
+  await signOut(auth);
+  showToast('👋 تم تسجيل الخروج', '#B2EBF2');
+};
+
+window.forgotPassword = async function() {
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) { showAuthError('أدخل بريدك الإلكتروني أولاً'); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    const el = document.getElementById('auth-error');
+    el.textContent = '✅ تم إرسال رابط إعادة التعيين — تحقق من بريدك';
+    el.classList.remove('hidden'); el.style.color = 'green';
+  } catch(e) { showAuthError(authErrMsg(e.code)); }
+};
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.color = ''; el.classList.remove('hidden');
+}
+
+function authErrMsg(code) {
+  const map = {
+    'auth/user-not-found':       '❌ البريد غير مسجل',
+    'auth/wrong-password':       '❌ كلمة المرور غير صحيحة',
+    'auth/email-already-in-use': '❌ البريد مسجل مسبقاً',
+    'auth/invalid-email':        '❌ بريد إلكتروني غير صالح',
+    'auth/weak-password':        '❌ كلمة المرور ضعيفة جداً',
+    'auth/too-many-requests':    '⚠️ محاولات كثيرة، انتظر قليلاً',
+    'auth/network-request-failed': '⚠️ تحقق من اتصالك بالإنترنت',
+    'auth/invalid-credential':   '❌ البريد أو كلمة المرور غير صحيحة',
+  };
+  return map[code] || '❌ حدث خطأ، حاول مجدداً';
+}
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let tasks        = [];
+let currentQuad  = 'q1';
+let currentTaskId= null;
+let currentTab   = 'all';
+let pageHistory  = ['page-dashboard'];
+let timerInterval= null;
+let taskStartTime= null;
+let watchId      = null;
+let taskLocation = null;
+let recognition  = null;
+let isListening  = false;
+let geoAlertSent = false;
+
+const quadMeta = {
+  q1:{ title:'المهم العاجل',      sub:'افعلها الآن فوراً 🔥',    headerClass:'bg-cardCyan',     bg:'#B2EBF2' },
+  q2:{ title:'المهم الغير عاجل',  sub:'خطط لها بعناية 🎯',        headerClass:'bg-cardYellow',   bg:'#FFF09E' },
+  q3:{ title:'العاجل غير المهم',  sub:'فوّضها لغيرك ⚡',          headerClass:'bg-cardLavender', bg:'#BDB2FF' },
+  q4:{ title:'غير مهم وغير عاجل', sub:'تخلّص منها أو أجّلها 🗑️', headerClass:'bg-cardPink',     bg:'#FFADAD' },
+};
+
+// ══════════════════════════════════════════
+// INIT — handled by onAuthStateChanged above
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Hide nav until user logs in
+  document.getElementById('bottom-nav').style.display = 'none';
+});
+
+function setTodayDate() {
+  const days   = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const d = new Date();
+  document.getElementById('today-date').textContent =
+    `${days[d.getDay()]}، ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function setDefaultDate() {
+  document.getElementById('task-date').value = new Date().toISOString().split('T')[0];
+}
+
+// ══════════════════════════════════════════
+// STORAGE — Firestore (per-user)
+// ══════════════════════════════════════════
+async function loadData() {
+  if (!TASKS_COL) return;
+  try {
+    showToast('⏳ جارٍ تحميل المهام...', '#B2EBF2');
+    const snap = await getDocs(query(TASKS_COL, orderBy('createdAt', 'desc')));
+    tasks = snap.docs.map(d => ({ ...d.data(), _docId: d.id }));
+    updateDashboard();
+    updateProfilePage();
+  } catch(e) {
+    console.error('loadData error', e);
+    try { tasks = JSON.parse(localStorage.getItem('blaze_tasks_' + (currentUser?.uid||'')) || '[]'); } catch(_){ tasks=[]; }
+    showToast('⚠️ تعذّر الاتصال، استخدام البيانات المحلية', '#FFADAD');
+  }
+}
+
+async function saveTask_remote(task) {
+  if (!TASKS_COL) return;
+  try {
+    if (task._docId) {
+      const { _docId, ...data } = task;
+      await updateDoc(doc(db, 'users', currentUser.uid, 'tasks', _docId), data);
+    } else {
+      const ref = await addDoc(TASKS_COL, task);
+      task._docId = ref.id;
+    }
+    localStorage.setItem('blaze_tasks_' + currentUser.uid, JSON.stringify(tasks));
+  } catch(e) {
+    console.error('saveTask_remote error', e);
+    localStorage.setItem('blaze_tasks_' + (currentUser?.uid||''), JSON.stringify(tasks));
+  }
+}
+
+async function deleteTask_remote(task) {
+  if (!TASKS_COL || !task._docId) return;
+  try {
+    await deleteDoc(doc(db, 'users', currentUser.uid, 'tasks', task._docId));
+    localStorage.setItem('blaze_tasks_' + currentUser.uid, JSON.stringify(tasks));
+  } catch(e) { console.error('deleteTask_remote error', e); }
+}
+
+function saveData() {
+  if (currentUser) localStorage.setItem('blaze_tasks_' + currentUser.uid, JSON.stringify(tasks));
+  tasks.forEach(t => saveTask_remote(t));
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  if (pageHistory[pageHistory.length-1] !== pageId) pageHistory.push(pageId);
+  syncNav(pageId);
+  if (pageId === 'page-tasks')   { renderTasksList(); }
+  if (pageId === 'page-profile') { updateProfilePage(); }
+  if (pageId === 'page-dashboard') { updateDashboard(); }
+}
+
+function goBack() {
+  if (pageHistory.length <= 1) return;
+  pageHistory.pop();
+  const prev = pageHistory[pageHistory.length-1];
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(prev).classList.add('active');
+  syncNav(prev);
+  if (prev === 'page-tasks')     { renderTasksList(); }
+  if (prev === 'page-profile')   { updateProfilePage(); }
+  if (prev === 'page-dashboard') { updateDashboard(); }
+  if (['page-dashboard','page-tasks'].includes(prev)) { stopTaskRun(); }
+}
+
+function navTo(pageId) {
+  pageHistory = [pageId];
+  goTo(pageId);
+}
+
+function syncNav(pageId) {
+  // Nav bar visibility
+  const hideNav = ['page-task-entry','page-task-detail'].includes(pageId);
+  document.getElementById('bottom-nav').style.display = hideNav ? 'none' : 'flex';
+  // Active state
+  const db = document.getElementById('nav-dashboard').querySelector('.nav-icon-wrap');
+  const tk = document.getElementById('nav-tasks').querySelector('.nav-icon-wrap');
+  db.className = 'nav-icon-wrap w-10 h-10 rounded-full flex items-center justify-center ' +
+    (pageId==='page-dashboard' ? 'bg-[#1A2E35] text-white' : 'bg-white text-[#1A2E35]');
+  tk.className = 'nav-icon-wrap w-10 h-10 rounded-full flex items-center justify-center ' +
+    (pageId==='page-tasks' ? 'bg-[#1A2E35] text-white' : 'bg-white text-[#1A2E35]');
+}
+
+// ══════════════════════════════════════════
+// TASK ENTRY
+// ══════════════════════════════════════════
+function openTaskEntry(quad) {
+  if (!quad) {
+    document.getElementById('quad-modal').classList.remove('hidden');
+    document.getElementById('quad-modal').style.display = 'flex';
+    return;
+  }
+  currentQuad = quad;
+  const m = quadMeta[quad];
+  const hdr = document.getElementById('task-entry-header');
+  hdr.className = `px-4 pt-6 pb-5 flex items-center gap-3 ${m.headerClass} rounded-b-3xl`;
+  document.getElementById('entry-quad-title').textContent = m.title;
+  document.getElementById('entry-quad-sub').textContent   = m.sub;
+
+  // Reset form
+  ['task-name','task-note','task-location'].forEach(id => document.getElementById(id).value = '');
+  ['task-time-from','task-time-to'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('location-status').classList.add('hidden');
+  document.getElementById('geo-radius-wrap').classList.add('hidden');
+  document.getElementById('geo-radius').value = 200;
+  document.getElementById('geo-radius-val').textContent = '200';
+  taskLocation = null;
+  setDefaultDate();
+  goTo('page-task-entry');
+}
+
+function closeQuadModal() {
+  document.getElementById('quad-modal').classList.add('hidden');
+  document.getElementById('quad-modal').style.display = 'none';
+}
+
+async function saveTask() {
+  const name = document.getElementById('task-name').value.trim();
+  if (!name) { showToast('⚠️ أدخل اسم المهمة أولاً!', '#FFADAD'); return; }
+
+  const task = {
+    id:           Date.now().toString(),
+    name,
+    quad:         currentQuad,
+    timeFrom:     document.getElementById('task-time-from').value,
+    timeTo:       document.getElementById('task-time-to').value,
+    date:         document.getElementById('task-date').value,
+    locationName: document.getElementById('task-location').value.trim(),
+    locationCoords: taskLocation ? { ...taskLocation } : null,
+    geoRadius:    parseInt(document.getElementById('geo-radius').value) || 200,
+    note:         document.getElementById('task-note').value.trim(),
+    done:         false,
+    createdAt:    new Date().toISOString(),
+    runSeconds:   0,
+  };
+
+  tasks.push(task);
+  showToast('💾 جارٍ الحفظ...', '#B2EBF2');
+  await saveTask_remote(task);
+  scheduleReminder(task);
+  showToast('✅ تم حفظ المهمة بنجاح!', '#B2EBF2');
+  setTimeout(() => { goBack(); updateDashboard(); }, 500);
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function updateDashboard() {
+  const total = tasks.length;
+  const done  = tasks.filter(t => t.done).length;
+  const today = new Date().toISOString().split('T')[0];
+  const todayPending = tasks.filter(t => t.date === today && !t.done);
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-done').textContent  = done;
+  document.getElementById('stat-today').textContent = todayPending.length;
+
+  ['q1','q2','q3','q4'].forEach(q => {
+    const cnt = tasks.filter(t => t.quad === q).length;
+    const pct = total ? Math.round(cnt/total*100) : 0;
+    document.getElementById('pct-'+q).textContent = pct + '%';
+    const badge = document.getElementById('badge-'+q);
+    if (cnt > 0) { badge.textContent = cnt; badge.classList.remove('hidden'); }
+    else badge.classList.add('hidden');
+  });
+
+  // Today list
+  const el = document.getElementById('today-tasks-list');
+  if (todayPending.length === 0) {
+    el.innerHTML = '<p class="text-gray-400 text-xs text-center py-3 font-bold">لا توجد مهام لليوم بعد 📋</p>';
+  } else {
+    const sorted = todayPending.sort((a,b) => (a.timeFrom||'') > (b.timeFrom||'') ? 1 : -1);
+    el.innerHTML = sorted.slice(0,5).map(t => `
+      <div class="task-item flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0 cursor-pointer" onclick="openTaskDetail('${t.id}')">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:${quadMeta[t.quad].bg}"></div>
+        <div class="flex-1 min-w-0">
+          <p class="font-bold text-sm truncate">${t.name}</p>
+          ${t.timeFrom ? `<p class="text-xs text-gray-400 font-bold">${t.timeFrom}${t.timeTo?' — '+t.timeTo:''}</p>` : ''}
+        </div>
+        <svg class="w-4 h-4 text-gray-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </div>
+    `).join('');
+  }
+}
+
+// ══════════════════════════════════════════
+// TASKS LIST
+// ══════════════════════════════════════════
+function setTaskTab(tab) {
+  currentTab = tab;
+  ['all','q1','q2','q3','q4'].forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    el.className = (t === tab)
+      ? 'flex-shrink-0 px-3 py-2 rounded-xl font-black text-xs bg-[#1A2E35] text-white'
+      : 'flex-shrink-0 px-3 py-2 rounded-xl font-black text-xs text-gray-400';
+  });
+  renderTasksList();
+}
+
+function renderTasksList() {
+  const filtered = (currentTab === 'all' ? [...tasks] : tasks.filter(t => t.quad === currentTab))
+    .sort((a,b) => {
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      if (a.date !== b.date) return (a.date||'') > (b.date||'') ? 1 : -1;
+      return (a.timeFrom||'') > (b.timeFrom||'') ? 1 : -1;
+    });
+
+  const container = document.getElementById('tasks-list-container');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="text-center py-16"><p class="text-5xl mb-3">📋</p><p class="text-gray-400 font-black">لا توجد مهام هنا</p><p class="text-gray-300 text-xs font-bold mt-1">اضغط + لإضافة مهمة جديدة</p></div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(t => `
+    <div class="task-item bg-white rounded-2xl p-4 soft-shadow mb-2.5 flex items-start gap-3 cursor-pointer" onclick="openTaskDetail('${t.id}')">
+      <div class="w-3.5 h-3.5 rounded-full flex-shrink-0 mt-1.5" style="background:${quadMeta[t.quad].bg}"></div>
+      <div class="flex-1 min-w-0">
+        <p class="font-black text-sm leading-tight ${t.done ? 'line-through text-gray-400' : ''}">${t.name}</p>
+        <div class="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
+          ${t.date ? `<span class="text-[11px] text-gray-400 font-bold">📅 ${formatDate(t.date)}</span>` : ''}
+          ${t.timeFrom ? `<span class="text-[11px] text-gray-400 font-bold">⏰ ${t.timeFrom}</span>` : ''}
+          ${t.locationName ? `<span class="text-[11px] text-gray-400 font-bold">📍 ${t.locationName}</span>` : ''}
+        </div>
+        <span class="inline-block mt-1.5 text-[10px] font-black px-2 py-0.5 rounded-full" style="background:${quadMeta[t.quad].bg}">${quadMeta[t.quad].title}</span>
+      </div>
+      <span class="text-base flex-shrink-0 mt-0.5">${t.done ? '✅' : '→'}</span>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+// TASK DETAIL
+// ══════════════════════════════════════════
+function openTaskDetail(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  currentTaskId = id;
+  geoAlertSent  = false;
+
+  const m = quadMeta[task.quad];
+  document.getElementById('detail-header').className      = `px-4 pt-6 pb-5 rounded-b-3xl ${m.headerClass}`;
+  document.getElementById('detail-quad-title').textContent = m.title;
+  document.getElementById('detail-task-name').textContent  = task.name;
+  document.getElementById('detail-time').textContent = task.timeFrom ? `⏰ ${task.timeFrom}${task.timeTo?' — '+task.timeTo:''}` : '';
+  document.getElementById('detail-date').textContent = task.date ? `📅 ${formatDate(task.date)}` : '';
+
+  if (task.locationName) {
+    document.getElementById('detail-loc-chip').classList.remove('hidden');
+    document.getElementById('detail-loc-name').textContent = task.locationName;
+  } else {
+    document.getElementById('detail-loc-chip').classList.add('hidden');
+  }
+
+  if (task.note) {
+    document.getElementById('detail-note-wrap').classList.remove('hidden');
+    document.getElementById('detail-note-text').textContent = task.note;
+  } else {
+    document.getElementById('detail-note-wrap').classList.add('hidden');
+  }
+
+  // Timer
+  document.getElementById('task-timer').textContent = formatSeconds(task.runSeconds || 0);
+  document.getElementById('btn-start-task').classList.toggle('hidden', task.done);
+  document.getElementById('btn-stop-task').classList.add('hidden');
+  document.getElementById('btn-done-task').classList.toggle('hidden', task.done);
+  document.getElementById('done-status-banner').classList.toggle('hidden', !task.done);
+  document.getElementById('geo-status-card').classList.add('hidden');
+
+  goTo('page-task-detail');
+}
+
+function startTaskRun() {
+  if (timerInterval) clearInterval(timerInterval);
+  const task = tasks.find(t => t.id === currentTaskId);
+  if (!task) return;
+
+  taskStartTime = Date.now() - (task.runSeconds || 0) * 1000;
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - taskStartTime) / 1000);
+    document.getElementById('task-timer').textContent = formatSeconds(elapsed);
+    const t = tasks.find(x => x.id === currentTaskId);
+    if (t) t.runSeconds = elapsed;
+  }, 1000);
+
+  document.getElementById('btn-start-task').classList.add('hidden');
+  document.getElementById('btn-stop-task').classList.remove('hidden');
+  document.getElementById('btn-done-task').classList.remove('hidden');
+
+  if (task.locationCoords) startGeofence(task);
+  showToast('▶ بدأت المهمة! حظاً موفقاً 💪', '#B2EBF2');
+}
+
+function stopTaskRun() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  if (watchId) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+  document.getElementById('btn-start-task').classList.remove('hidden');
+  document.getElementById('btn-stop-task').classList.add('hidden');
+  document.getElementById('btn-done-task').classList.add('hidden');
+  document.getElementById('geo-status-card').classList.add('hidden');
+  const task = tasks.find(t => t.id === currentTaskId);
+  if (task) saveTask_remote(task);
+}
+
+async function completeTask() {
+  const task = tasks.find(t => t.id === currentTaskId);
+  if (!task) return;
+  task.done = true;
+  stopTaskRun();
+  await saveTask_remote(task);
+  document.getElementById('btn-start-task').classList.add('hidden');
+  document.getElementById('btn-done-task').classList.add('hidden');
+  document.getElementById('done-status-banner').classList.remove('hidden');
+  showToast('🎉 رائع! أنجزت المهمة بنجاح!', '#B2EBF2');
+  setTimeout(() => { goBack(); updateDashboard(); }, 900);
+}
+
+async function deleteCurrentTask() {
+  if (!confirm('سيتم حذف هذه المهمة نهائياً. هل أنت متأكد؟')) return;
+  const task = tasks.find(t => t.id === currentTaskId);
+  tasks = tasks.filter(t => t.id !== currentTaskId);
+  stopTaskRun();
+  if (task) await deleteTask_remote(task);
+  showToast('🗑️ تم حذف المهمة', '#FFADAD');
+  setTimeout(() => { goBack(); updateDashboard(); }, 500);
+}
+
+// ══════════════════════════════════════════
+// GEOFENCING
+// ══════════════════════════════════════════
+function captureLocation() {
+  if (!navigator.geolocation) { showToast('📍 المتصفح لا يدعم الموقع', '#FFADAD'); return; }
+  const btn = document.getElementById('loc-btn');
+  btn.innerHTML = '<span class="text-base">⏳</span>';
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      taskLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+      if (!document.getElementById('task-location').value)
+        document.getElementById('task-location').value = 'موقعي الحالي';
+      document.getElementById('location-status').textContent =
+        `✅ موقعك محدد (دقة ~${Math.round(pos.coords.accuracy)} م)`;
+      document.getElementById('location-status').classList.remove('hidden');
+      document.getElementById('geo-radius-wrap').classList.remove('hidden');
+      btn.innerHTML = '<span class="text-base">✅</span>';
+      showToast('📍 تم تحديد موقعك بنجاح!', '#B2EBF2');
+    },
+    () => {
+      btn.innerHTML = '<svg class="w-5 h-5 text-[#1A2E35]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
+      showToast('❌ تعذّر الحصول على الموقع', '#FFADAD');
+    },
+    { enableHighAccuracy: true, timeout: 12000 }
+  );
+}
+
+function startGeofence(task) {
+  if (!navigator.geolocation) return;
+  document.getElementById('geo-status-card').classList.remove('hidden');
+  const radius = task.geoRadius || 200;
+
+  watchId = navigator.geolocation.watchPosition(
+    pos => {
+      const dist = getDistance(
+        pos.coords.latitude, pos.coords.longitude,
+        task.locationCoords.lat, task.locationCoords.lng
+      );
+      const distTxt = dist < 1000 ? `${Math.round(dist)} متر` : `${(dist/1000).toFixed(1)} كم`;
+      document.getElementById('geo-distance-text').textContent = `المسافة عن الموقع: ${distTxt}`;
+
+      if (dist > radius) {
+        document.getElementById('geo-dot').className = 'w-4 h-4 bg-red-500 rounded-full flex-shrink-0';
+        if (!geoAlertSent) {
+          geoAlertSent = true;
+          sendNotification('⚠️ BLAZE — تنبيه موقع',
+            `ابتعدت عن "${task.name}" بمسافة ${distTxt}. هل تريد العودة؟ 🗺️`);
+          setTimeout(() => { geoAlertSent = false; }, 300000); // cooldown 5 min
+        }
+      } else {
+        document.getElementById('geo-dot').className = 'w-4 h-4 bg-green-500 rounded-full geo-active flex-shrink-0';
+        geoAlertSent = false;
+      }
+    },
+    null,
+    { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 }
+  );
+}
+
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLon = (lon2-lon1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 +
+    Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ══════════════════════════════════════════
+// VOICE INPUT
+// ══════════════════════════════════════════
+function toggleVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showToast('🎙️ المتصفح لا يدعم التعرف الصوتي (جرّب Chrome)', '#FFADAD'); return; }
+
+  if (isListening) {
+    recognition && recognition.stop();
+    return;
+  }
+
+  recognition = new SR();
+  recognition.lang           = 'ar-SA';
+  recognition.continuous     = false;
+  recognition.interimResults = true;
+
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('voice-listening-badge').classList.remove('hidden');
+    document.getElementById('voice-transcript').classList.remove('hidden');
+    document.getElementById('voice-transcript').textContent = '...';
+    document.getElementById('pulse-ring').classList.add('pulse-ring');
+    document.getElementById('pulse-ring').style.opacity = '0.7';
+    document.getElementById('voice-btn').style.background = '#FFADAD';
+  };
+
+  recognition.onresult = e => {
+    let text = '';
+    for (let i = e.resultIndex; i < e.results.length; i++)
+      text += e.results[i][0].transcript;
+    document.getElementById('voice-transcript').textContent = text;
+  };
+
+  recognition.onend = () => {
+    isListening = false;
+    document.getElementById('voice-listening-badge').classList.add('hidden');
+    document.getElementById('pulse-ring').classList.remove('pulse-ring');
+    document.getElementById('pulse-ring').style.opacity = '0';
+    document.getElementById('voice-btn').style.background = '#B2EBF2';
+    const text = document.getElementById('voice-transcript').textContent.trim();
+    if (text && text !== '...') {
+      showToast('✅ تم تسجيل أفكارك! فتح نموذج المهمة...', '#B2EBF2');
+      autoOpenFromVoice(text);
+    }
+  };
+
+  recognition.onerror = () => {
+    isListening = false;
+    document.getElementById('voice-listening-badge').classList.add('hidden');
+    document.getElementById('pulse-ring').classList.remove('pulse-ring');
+    document.getElementById('pulse-ring').style.opacity = '0';
+    document.getElementById('voice-btn').style.background = '#B2EBF2';
+    showToast('❌ لم يُتعرف على الصوت، حاول مجدداً', '#FFADAD');
+  };
+
+  recognition.start();
+}
+
+function autoOpenFromVoice(text) {
+  // هيوريستيك بسيط لتصنيف المهمة صوتياً
+  let quad = 'q1';
+  const t = text;
+  if ((t.includes('مهم') && t.includes('عاجل')) || t.includes('فوري') || t.includes('الآن')) quad = 'q1';
+  else if (t.includes('مهم') || t.includes('أهمية') || t.includes('ضروري')) quad = 'q2';
+  else if (t.includes('عاجل') || t.includes('سريع') || t.includes('قريب')) quad = 'q3';
+  else quad = 'q4';
+
+  setTimeout(() => {
+    openTaskEntry(quad);
+    setTimeout(() => { document.getElementById('task-name').value = text; }, 300);
+  }, 1000);
+}
+
+// ══════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════
+async function requestNotifPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+}
+
+function sendNotification(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, { body });
+  } else {
+    showToast(title, '#FFF09E');
+  }
+}
+
+function scheduleReminder(task) {
+  if (!task.date || !task.timeFrom) return;
+  const now  = Date.now();
+  const base = new Date(`${task.date}T${task.timeFrom}`).getTime();
+  const r15  = base - 15*60*1000 - now;
+  const r0   = base - now;
+  if (r15 > 0 && r15 < 86400000)
+    setTimeout(() => sendNotification('🔔 BLAZE — تذكير', `"${task.name}" تبدأ خلال 15 دقيقة!`), r15);
+  if (r0  > 0 && r0  < 86400000)
+    setTimeout(() => sendNotification('⏰ وقت مهمتك!', `حان وقت: "${task.name}"`), r0);
+}
+
+function checkUpcomingTasks() {
+  const now    = new Date();
+  const today  = now.toISOString().split('T')[0];
+  const curMin = now.getHours()*60 + now.getMinutes();
+
+  tasks.filter(t => !t.done && t.date===today && t.timeFrom).forEach(t => {
+    const [h,m] = t.timeFrom.split(':').map(Number);
+    const diff  = h*60+m - curMin;
+    if (diff >= 0 && diff <= 30) {
+      const msg = diff === 0 ? `ابدأ "${t.name}" الآن! 🔥` : `"${t.name}" بعد ${diff} دقيقة ⏰`;
+      document.getElementById('notif-text').textContent = '🔔 ' + msg;
+      document.getElementById('notif-banner').style.display = 'flex';
+    }
+  });
+}
+
+function closeBanner() {
+  document.getElementById('notif-banner').style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════════
+function initProfile() {
+  const name = localStorage.getItem('blaze_name') || '';
+  if (name) applyName(name);
+  document.getElementById('profile-name').value = name;
+}
+
+function applyName(name) {
+  if (!name) return;
+  const first = name.split(' ')[0];
+  const init  = name[0].toUpperCase();
+  document.getElementById('greeting-name').textContent = `مرحباً ${first} 👋`;
+  document.getElementById('avatar-initials').textContent = init;
+  document.getElementById('profile-avatar').textContent  = init;
+  document.getElementById('menu-avatar').textContent     = init;
+  document.getElementById('menu-name').textContent       = name;
+}
+
+function updateName(val) {
+  localStorage.setItem('blaze_name', val);
+  applyName(val);
+}
+
+function updateProfilePage() {
+  const total = tasks.length;
+  const done  = tasks.filter(t => t.done).length;
+  document.getElementById('prof-total').textContent = total;
+  document.getElementById('prof-done').textContent  = done;
+  document.getElementById('prof-pct').textContent   = total ? Math.round(done/total*100)+'%' : '0%';
+  document.getElementById('prof-streak').textContent = calcStreak();
+}
+
+function calcStreak() {
+  const doneDates = [...new Set(tasks.filter(t=>t.done&&t.date).map(t=>t.date))].sort().reverse();
+  let streak = 0, d = new Date();
+  for (const date of doneDates) {
+    if (date === d.toISOString().split('T')[0]) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function formatSeconds(s) {
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  return [h,m,sec].map(n=>String(n).padStart(2,'0')).join(':');
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const dt = new Date(d+'T00:00:00');
+  return `${dt.getDate()} ${months[dt.getMonth()]}`;
+}
+
+function showToast(msg, color='#B2EBF2') {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast bg-white rounded-2xl px-5 py-3 font-bold text-sm text-center';
+  t.style.cssText = `border-right:4px solid ${color}; box-shadow:0 8px 30px rgba(0,0,0,0.15);`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+function toggleMenu() {
+  const menu    = document.getElementById('side-menu');
+  const overlay = document.getElementById('side-menu-overlay');
+  const open    = menu.style.transform === 'translateX(0px)';
+  menu.style.transform = open ? 'translateX(100%)' : 'translateX(0px)';
+  overlay.classList.toggle('hidden', open);
+}
+
+function exportTasks() {
+  const blob = new Blob([JSON.stringify(tasks, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `blaze-tasks-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  showToast('📤 تم التصدير!', '#B2EBF2');
+}
+
+async function clearAllData() {
+  if (!confirm('سيتم حذف كل المهام نهائياً. متأكد؟')) return;
+  showToast('⏳ جارٍ المسح...', '#FFADAD');
+  if (TASKS_COL) {
+    try {
+      const snap = await getDocs(TASKS_COL);
+      await Promise.all(snap.docs.map(d => deleteDoc(doc(db, 'users', currentUser.uid, 'tasks', d.id))));
+    } catch(e) { console.error('clearAllData error', e); }
+  }
+  tasks = [];
+  if (currentUser) localStorage.removeItem('blaze_tasks_' + currentUser.uid);
+  updateDashboard();
+  showToast('🗑️ تم مسح كل البيانات', '#FFADAD');
+}
+
+// ══════════════════════════════════════════
+// EXPOSE FUNCTIONS TO window (ES module scope)
+// ══════════════════════════════════════════
+Object.assign(window, {
+  goTo, goBack, navTo, toggleMenu,
+  openTaskEntry, closeQuadModal, saveTask,
+  openTaskDetail, startTaskRun, stopTaskRun, completeTask, deleteCurrentTask,
+  setTaskTab, captureLocation,
+  toggleVoice,
+  requestNotifPermission, closeBanner,
+  initProfile, updateName, updateProfilePage,
+  exportTasks, clearAllData,
+  logoutUser: window.logoutUser,
+  loginUser: window.loginUser,
+  registerUser: window.registerUser,
+  forgotPassword: window.forgotPassword,
+  switchAuthTab: window.switchAuthTab,
+});
+
+</script>
+</body>
+</html>

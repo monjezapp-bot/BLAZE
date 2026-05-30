@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A2E35" />
+      <stop offset="100%" style="stop-color:#0D1F24" />
+    </linearGradient>
+    <linearGradient id="flameGrad" x1="0%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF6B00" />
+      <stop offset="50%" style="stop-color:#FF9500" />
+      <stop offset="100%" style="stop-color:#FFD000" />
+    </linearGradient>
+    <linearGradient id="flameInner" x1="0%" y1="100%" x2="40%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF3D00" />
+      <stop offset="100%" style="stop-color:#FFAB00" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="20" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="512" height="512" rx="112" ry="112" fill="url(#bgGrad)"/>
+
+  <!-- Glow backdrop for flame -->
+  <ellipse cx="256" cy="300" rx="120" ry="80" fill="#FF6B00" opacity="0.15" filter="url(#softGlow)"/>
+
+  <!-- Flame outer — scaled up and centered -->
+  <g transform="translate(136, 60) scale(2.4)">
+    <path d="M55 195 C55 195 10 168 10 118 C10 88 28 65 46 48 C46 48 42 82 64 90 C64 90 48 60 76 28 C76 28 72 68 92 78 C92 78 84 52 96 36 C96 36 128 72 116 116 C116 116 128 98 124 78 C124 78 148 106 142 148 C137 172 118 195 55 195Z"
+      fill="url(#flameGrad)" filter="url(#glow)"/>
+    <path d="M55 185 C55 185 28 164 28 132 C28 112 40 96 52 82 C52 82 48 106 64 114 C64 114 58 92 76 70 C76 70 86 96 80 118 C80 118 92 104 88 88 C88 88 110 112 104 140 C100 160 86 185 55 185Z"
+      fill="url(#flameInner)" opacity="0.9"/>
+    <ellipse cx="50" cy="138" rx="9" ry="18" fill="white" opacity="0.2" transform="rotate(-12 50 138)"/>
+  </g>
+
+  <!-- "B" letter subtle at bottom -->
+  <text x="256" y="470"
+    font-family="'Arial Black', sans-serif"
+    font-weight="900"
+    font-size="36"
+    text-anchor="middle"
+    letter-spacing="8"
+    fill="white"
+    opacity="0.35">BLAZE</text>
+</svg>
